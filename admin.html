@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
-<title>CCC Admin | access_code 発行</title>
+<title>CCC Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:wght@500;600;700&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet" />
@@ -40,7 +40,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 48px 20px;
     position: relative;
     overflow-x: hidden;
@@ -64,7 +64,7 @@
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 520px;
+    max-width: 560px;
     background: linear-gradient(180deg, rgba(21, 18, 29, 0.92), rgba(14, 12, 20, 0.92));
     border: 1px solid var(--gold-soft);
     padding: 56px 40px 44px;
@@ -96,7 +96,7 @@
 
   .brand {
     text-align: center;
-    margin-bottom: 36px;
+    margin-bottom: 32px;
   }
 
   .brand-title {
@@ -137,18 +137,8 @@
     margin: 0;
   }
 
-  .lead {
-    text-align: center;
-    font-size: 13px;
-    line-height: 1.9;
-    color: var(--text-2);
-    margin: 0 0 32px;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  .password-zone {
+    margin-bottom: 20px;
   }
 
   .field {
@@ -166,6 +156,7 @@
   }
 
   input[type="text"],
+  input[type="url"],
   input[type="password"] {
     appearance: none;
     background: rgba(7, 6, 10, 0.7);
@@ -177,16 +168,37 @@
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     border-radius: 0;
+    width: 100%;
   }
 
-  input[type="text"]:focus,
-  input[type="password"]:focus {
+  input:focus {
     border-color: var(--gold-2);
     box-shadow: 0 0 0 1px var(--gold-soft), 0 0 16px rgba(212, 175, 55, 0.2);
   }
 
-  button {
-    margin-top: 8px;
+  .section {
+    border-top: 1px solid rgba(212, 175, 55, 0.18);
+    padding-top: 24px;
+    margin-top: 24px;
+  }
+
+  .section-title {
+    font-family: "Cormorant Garamond", "Noto Serif JP", serif;
+    font-size: 18px;
+    color: var(--gold-1);
+    letter-spacing: 0.06em;
+    margin: 0 0 16px;
+    text-align: center;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .btn-primary {
+    margin-top: 4px;
     padding: 14px 18px;
     background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 60%, var(--gold-3));
     color: #1a1428;
@@ -200,12 +212,29 @@
     border-radius: 0;
   }
 
-  button:hover:not(:disabled) {
-    box-shadow: 0 0 24px rgba(212, 175, 55, 0.35);
+  .btn-secondary {
+    margin-top: 4px;
+    padding: 10px 14px;
+    background: transparent;
+    color: var(--gold-1);
+    border: 1px solid var(--gold-2);
+    cursor: pointer;
+    font-family: "Noto Serif JP", serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    transition: background 0.2s ease, opacity 0.2s ease;
+    border-radius: 0;
   }
 
-  button:active:not(:disabled) {
+  .btn-primary:hover:not(:disabled) {
+    box-shadow: 0 0 24px rgba(212, 175, 55, 0.35);
+  }
+  .btn-primary:active:not(:disabled) {
     transform: translateY(1px);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: rgba(212, 175, 55, 0.1);
   }
 
   button:disabled {
@@ -214,12 +243,11 @@
   }
 
   .message {
-    margin-top: 24px;
-    padding: 16px 18px;
+    margin-top: 16px;
+    padding: 14px 16px;
     border: 1px solid;
     font-size: 13px;
     line-height: 1.8;
-    text-align: center;
     display: none;
   }
 
@@ -237,12 +265,6 @@
     border-color: rgba(201, 232, 180, 0.4);
     color: var(--success);
     background: rgba(201, 232, 180, 0.05);
-    text-align: left;
-  }
-
-  .issued {
-    margin-top: 14px;
-    font-family: "Cinzel", "Noto Serif JP", serif;
   }
 
   .issued .row {
@@ -265,7 +287,7 @@
 
   .issued .value {
     flex: 1;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--text-1);
     word-break: break-all;
     user-select: all;
@@ -285,13 +307,26 @@
     transition: background 0.2s ease;
   }
 
-  .copy-btn:hover {
-    background: rgba(244, 225, 163, 0.1);
-  }
+  .copy-btn:hover { background: rgba(244, 225, 163, 0.1); }
+  .copy-btn.copied { color: var(--success); border-color: rgba(201, 232, 180, 0.5); }
 
-  .copy-btn.copied {
-    color: var(--success);
-    border-color: rgba(201, 232, 180, 0.5);
+  .current-url-box {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border: 1px dashed rgba(212, 175, 55, 0.25);
+    font-size: 12px;
+    color: var(--text-2);
+    word-break: break-all;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+  }
+  .current-url-box .placeholder {
+    opacity: 0.6;
+  }
+  .current-url-box .url-value {
+    color: var(--text-1);
+    font-size: 13px;
   }
 
   .footer {
@@ -323,15 +358,10 @@
         <span class="star">✦</span>
         <span class="line"></span>
       </div>
-      <p class="brand-sub">Admin / access_code 発行</p>
+      <p class="brand-sub">Admin</p>
     </header>
 
-    <p class="lead">
-      管理者パスワードと note ID を入力すると、<br />
-      access_code を発行して会員 CSV に追記します。
-    </p>
-
-    <form id="issue-form" novalidate>
+    <div class="password-zone">
       <div class="field">
         <label for="admin_password">Admin Password</label>
         <input
@@ -342,130 +372,253 @@
           required
         />
       </div>
+    </div>
+
+    <section class="section">
+      <h2 class="section-title">access_code 発行</h2>
+      <form id="issue-form" novalidate>
+        <div class="field">
+          <label for="note_id">Note ID</label>
+          <input
+            type="text"
+            id="note_id"
+            name="note_id"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            required
+          />
+        </div>
+        <button type="submit" class="btn-primary" id="issue-btn">発行</button>
+      </form>
+      <div id="issue-message" class="message" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">GPTs URL 更新</h2>
 
       <div class="field">
-        <label for="note_id">Note ID</label>
-        <input
-          type="text"
-          id="note_id"
-          name="note_id"
-          autocomplete="off"
-          autocapitalize="off"
-          spellcheck="false"
-          required
-        />
+        <label>現在の URL</label>
+        <div class="current-url-box" id="current-url-box">
+          <span class="placeholder">「現在のURLを取得」を押してください</span>
+        </div>
+        <button type="button" class="btn-secondary" id="fetch-url-btn">現在のURLを取得</button>
       </div>
 
-      <button type="submit" id="submit-btn">発行</button>
-    </form>
-
-    <div id="message" class="message" role="status" aria-live="polite"></div>
+      <form id="update-url-form" novalidate style="margin-top: 20px;">
+        <div class="field">
+          <label for="new_gpts_url">新しい URL</label>
+          <input
+            type="url"
+            id="new_gpts_url"
+            name="new_gpts_url"
+            autocomplete="off"
+            placeholder="https://chatgpt.com/g/..."
+            required
+          />
+        </div>
+        <button type="submit" class="btn-primary" id="update-btn">更新</button>
+      </form>
+      <div id="url-message" class="message" role="status" aria-live="polite"></div>
+    </section>
 
     <p class="footer">© ChatGPT Creative Club / Admin</p>
   </main>
 
 <script>
-  const API_URL = "https://ccc-gpt-member-api.hasyamo.workers.dev/admin/issue-member";
+  const API_BASE = "https://ccc-gpt-member-api.hasyamo.workers.dev";
 
-  const form = document.getElementById("issue-form");
-  const submitBtn = document.getElementById("submit-btn");
-  const messageEl = document.getElementById("message");
   const passwordEl = document.getElementById("admin_password");
+
+  const issueForm = document.getElementById("issue-form");
+  const issueBtn = document.getElementById("issue-btn");
+  const issueMessageEl = document.getElementById("issue-message");
   const noteIdEl = document.getElementById("note_id");
 
-  function clearMessage() {
-    messageEl.className = "message";
-    messageEl.innerHTML = "";
+  const fetchUrlBtn = document.getElementById("fetch-url-btn");
+  const currentUrlBox = document.getElementById("current-url-box");
+
+  const updateUrlForm = document.getElementById("update-url-form");
+  const updateBtn = document.getElementById("update-btn");
+  const newUrlEl = document.getElementById("new_gpts_url");
+  const urlMessageEl = document.getElementById("url-message");
+
+  function setMessage(el, type, html) {
+    el.className = "message is-visible " + type;
+    el.innerHTML = html;
+  }
+  function clearMessage(el) {
+    el.className = "message";
+    el.innerHTML = "";
   }
 
-  function showError(text) {
-    messageEl.className = "message is-visible error";
-    messageEl.textContent = text;
+  function setCurrentUrl(url) {
+    currentUrlBox.innerHTML = "";
+    if (!url) {
+      const span = document.createElement("span");
+      span.className = "placeholder";
+      span.textContent = "（未設定）";
+      currentUrlBox.appendChild(span);
+    } else {
+      const span = document.createElement("span");
+      span.className = "url-value";
+      span.textContent = url;
+      currentUrlBox.appendChild(span);
+    }
   }
 
-  function showIssued(noteId, accessCode) {
-    messageEl.className = "message is-visible success";
-    messageEl.innerHTML = `
-      <div>access_code を発行しました。</div>
-      <div class="issued">
-        <div class="row">
-          <div class="label">Note ID</div>
-          <div class="value" id="issued-note-id"></div>
-        </div>
-        <div class="row">
-          <div class="label">Access Code</div>
-          <div class="value" id="issued-access-code"></div>
-          <button type="button" class="copy-btn" id="copy-btn">コピー</button>
-        </div>
-      </div>
-    `;
-    document.getElementById("issued-note-id").textContent = noteId;
-    document.getElementById("issued-access-code").textContent = accessCode;
-
-    const copyBtn = document.getElementById("copy-btn");
-    copyBtn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(accessCode);
-        copyBtn.classList.add("copied");
-        copyBtn.textContent = "コピー済み";
-        setTimeout(() => {
-          copyBtn.classList.remove("copied");
-          copyBtn.textContent = "コピー";
-        }, 1800);
-      } catch (e) {
-        copyBtn.textContent = "失敗";
-      }
-    });
+  function reasonToText(reason, fallback) {
+    switch (reason) {
+      case "invalid_password": return "管理者パスワードが違います。";
+      case "duplicate_note_id": return "この note_id は既に登録されています。";
+      case "invalid_url": return "URL は https:// で始まる必要があります。";
+      case "missing_parameters": return "入力内容を確認してください。";
+      default: return fallback;
+    }
   }
 
-  form.addEventListener("submit", async (e) => {
+  // --- access_code 発行 ---
+  issueForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    clearMessage();
+    clearMessage(issueMessageEl);
 
     const password = passwordEl.value;
     const noteId = noteIdEl.value.trim();
 
     if (!password || !noteId) {
-      showError("管理者パスワードと note ID を入力してください。");
+      setMessage(issueMessageEl, "error", "管理者パスワードと note ID を入力してください。");
       return;
     }
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = "発行中...";
+    issueBtn.disabled = true;
+    issueBtn.textContent = "発行中...";
 
     try {
-      const res = await fetch(API_URL, {
+      const res = await fetch(API_BASE + "/admin/issue-member", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          admin_password: password,
-          note_id: noteId
-        })
+        body: JSON.stringify({ admin_password: password, note_id: noteId })
       });
-
       const data = await res.json().catch(() => null);
 
       if (res.ok && data && data.ok && data.access_code) {
-        showIssued(data.note_id, data.access_code);
+        setMessage(
+          issueMessageEl,
+          "success",
+          `<div>access_code を発行しました。</div>
+           <div class="issued">
+             <div class="row">
+               <div class="label">Note ID</div>
+               <div class="value" id="issued-note-id"></div>
+             </div>
+             <div class="row">
+               <div class="label">Access Code</div>
+               <div class="value" id="issued-access-code"></div>
+               <button type="button" class="copy-btn" id="copy-btn">コピー</button>
+             </div>
+           </div>`
+        );
+        document.getElementById("issued-note-id").textContent = data.note_id;
+        document.getElementById("issued-access-code").textContent = data.access_code;
+
+        const copyBtn = document.getElementById("copy-btn");
+        copyBtn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(data.access_code);
+            copyBtn.classList.add("copied");
+            copyBtn.textContent = "コピー済み";
+            setTimeout(() => {
+              copyBtn.classList.remove("copied");
+              copyBtn.textContent = "コピー";
+            }, 1800);
+          } catch (e) {
+            copyBtn.textContent = "失敗";
+          }
+        });
+
         noteIdEl.value = "";
         noteIdEl.focus();
       } else {
-        const reason = data?.reason;
-        if (reason === "invalid_password") {
-          showError("管理者パスワードが違います。");
-        } else if (reason === "duplicate_note_id") {
-          showError("この note_id は既に登録されています。");
-        } else if (reason === "missing_parameters") {
-          showError("入力内容を確認してください。");
-        } else {
-          showError("発行に失敗しました。時間をおいて再度お試しください。");
-        }
+        setMessage(issueMessageEl, "error", reasonToText(data?.reason, "発行に失敗しました。"));
       }
     } catch (err) {
-      showError("通信エラーが発生しました。");
+      setMessage(issueMessageEl, "error", "通信エラーが発生しました。");
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "発行";
+      issueBtn.disabled = false;
+      issueBtn.textContent = "発行";
+    }
+  });
+
+  // --- 現在の URL 取得 ---
+  fetchUrlBtn.addEventListener("click", async () => {
+    clearMessage(urlMessageEl);
+    const password = passwordEl.value;
+
+    if (!password) {
+      setMessage(urlMessageEl, "error", "管理者パスワードを入力してください。");
+      return;
+    }
+
+    fetchUrlBtn.disabled = true;
+    fetchUrlBtn.textContent = "取得中...";
+
+    try {
+      const res = await fetch(API_BASE + "/admin/get-gpts-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_password: password })
+      });
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data && data.ok) {
+        setCurrentUrl(data.gpts_url || "");
+      } else {
+        setMessage(urlMessageEl, "error", reasonToText(data?.reason, "取得に失敗しました。"));
+      }
+    } catch (err) {
+      setMessage(urlMessageEl, "error", "通信エラーが発生しました。");
+    } finally {
+      fetchUrlBtn.disabled = false;
+      fetchUrlBtn.textContent = "現在のURLを取得";
+    }
+  });
+
+  // --- GPTs URL 更新 ---
+  updateUrlForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMessage(urlMessageEl);
+
+    const password = passwordEl.value;
+    const newUrl = newUrlEl.value.trim();
+
+    if (!password || !newUrl) {
+      setMessage(urlMessageEl, "error", "管理者パスワードと新しい URL を入力してください。");
+      return;
+    }
+
+    updateBtn.disabled = true;
+    updateBtn.textContent = "更新中...";
+
+    try {
+      const res = await fetch(API_BASE + "/admin/update-gpts-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_password: password, gpts_url: newUrl })
+      });
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data && data.ok && data.gpts_url) {
+        setCurrentUrl(data.gpts_url);
+        setMessage(urlMessageEl, "success", "GPTs URL を更新しました。");
+        newUrlEl.value = "";
+      } else {
+        setMessage(urlMessageEl, "error", reasonToText(data?.reason, "更新に失敗しました。"));
+      }
+    } catch (err) {
+      setMessage(urlMessageEl, "error", "通信エラーが発生しました。");
+    } finally {
+      updateBtn.disabled = false;
+      updateBtn.textContent = "更新";
     }
   });
 </script>
