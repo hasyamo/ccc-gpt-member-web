@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>ChatGPT Creative Club | 会員証 GPTs 限定配布サイト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:wght@500;600;700&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-0: #07060a;
+    --bg-1: #0e0c14;
+    --bg-2: #15121d;
+    --gold-1: #f4e1a3;
+    --gold-2: #d4af37;
+    --gold-3: #a8842a;
+    --gold-soft: rgba(212, 175, 55, 0.35);
+    --text-1: #efe6cf;
+    --text-2: #b8ad8f;
+    --error: #e8a3a3;
+    --success: #c9e8b4;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+
+  body {
+    font-family: "Noto Serif JP", serif;
+    color: var(--text-1);
+    background: radial-gradient(ellipse at top, #1a1428 0%, var(--bg-0) 60%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, rgba(244, 225, 163, 0.6), transparent 60%),
+      radial-gradient(1px 1px at 78% 22%, rgba(244, 225, 163, 0.5), transparent 60%),
+      radial-gradient(1px 1px at 32% 76%, rgba(244, 225, 163, 0.45), transparent 60%),
+      radial-gradient(1px 1px at 88% 84%, rgba(244, 225, 163, 0.55), transparent 60%),
+      radial-gradient(1px 1px at 52% 42%, rgba(244, 225, 163, 0.35), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    background: linear-gradient(180deg, rgba(21, 18, 29, 0.92), rgba(14, 12, 20, 0.92));
+    border: 1px solid var(--gold-soft);
+    padding: 56px 40px 44px;
+    box-shadow:
+      0 0 0 1px rgba(244, 225, 163, 0.05) inset,
+      0 30px 80px rgba(0, 0, 0, 0.6),
+      0 0 60px rgba(212, 175, 55, 0.08);
+  }
+
+  .card::before,
+  .card::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--gold-2);
+  }
+  .card::before { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+  .card::after  { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+  .corner {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--gold-2);
+  }
+  .corner.tr { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+  .corner.bl { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+
+  .brand {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .brand-title {
+    font-family: "Cormorant Garamond", "Noto Serif JP", serif;
+    font-weight: 600;
+    font-size: 32px;
+    letter-spacing: 0.04em;
+    margin: 0;
+    background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 60%, var(--gold-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1.2;
+  }
+
+  .brand-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 14px 0 12px;
+    color: var(--gold-2);
+  }
+  .brand-divider .line {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-2), transparent);
+  }
+  .brand-divider .star {
+    font-size: 10px;
+    opacity: 0.9;
+  }
+
+  .brand-sub {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    color: var(--text-2);
+    margin: 0;
+  }
+
+  .lead {
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--text-2);
+    margin: 0 0 32px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  label {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--gold-2);
+    font-family: "Cinzel", serif;
+    font-weight: 500;
+  }
+
+  input[type="text"] {
+    appearance: none;
+    background: rgba(7, 6, 10, 0.7);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    color: var(--text-1);
+    font-family: "Noto Serif JP", serif;
+    font-size: 15px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 0;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--gold-2);
+    box-shadow: 0 0 0 1px var(--gold-soft), 0 0 16px rgba(212, 175, 55, 0.2);
+  }
+
+  button {
+    margin-top: 8px;
+    padding: 14px 18px;
+    background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 60%, var(--gold-3));
+    color: #1a1428;
+    border: none;
+    cursor: pointer;
+    font-family: "Noto Serif JP", serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.4em;
+    transition: transform 0.1s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    border-radius: 0;
+  }
+
+  button:hover:not(:disabled) {
+    box-shadow: 0 0 24px rgba(212, 175, 55, 0.35);
+  }
+
+  button:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .message {
+    margin-top: 24px;
+    padding: 16px 18px;
+    border: 1px solid;
+    font-size: 13px;
+    line-height: 1.8;
+    text-align: center;
+    display: none;
+  }
+
+  .message.is-visible {
+    display: block;
+  }
+
+  .message.error {
+    border-color: rgba(232, 163, 163, 0.4);
+    color: var(--error);
+    background: rgba(232, 163, 163, 0.05);
+  }
+
+  .message.success {
+    border-color: rgba(201, 232, 180, 0.4);
+    color: var(--success);
+    background: rgba(201, 232, 180, 0.05);
+  }
+
+  .gpt-link {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 10px 18px;
+    color: var(--gold-1);
+    border: 1px solid var(--gold-2);
+    text-decoration: none;
+    font-family: "Cinzel", serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    transition: background 0.2s ease;
+  }
+
+  .gpt-link:hover {
+    background: rgba(212, 175, 55, 0.1);
+  }
+
+  .footer {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-2);
+    opacity: 0.7;
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 44px 24px 32px; }
+    .brand-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+  <main class="card" role="main">
+    <span class="corner tr" aria-hidden="true"></span>
+    <span class="corner bl" aria-hidden="true"></span>
+
+    <header class="brand">
+      <h1 class="brand-title">ChatGPT Creative Club</h1>
+      <div class="brand-divider" aria-hidden="true">
+        <span class="line"></span>
+        <span class="star">✦</span>
+        <span class="line"></span>
+      </div>
+      <p class="brand-sub">会員証 GPTs 限定配布サイト</p>
+    </header>
+
+    <p class="lead">
+      CCC マガジン参加者の方に、<br />
+      会員証カードを生成する GPTs をお渡ししています。
+    </p>
+
+    <form id="auth-form" novalidate>
+      <div class="field">
+        <label for="note_id">Note ID</label>
+        <input
+          type="text"
+          id="note_id"
+          name="note_id"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          required
+        />
+      </div>
+
+      <div class="field">
+        <label for="access_code">Access Code</label>
+        <input
+          type="text"
+          id="access_code"
+          name="access_code"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          required
+        />
+      </div>
+
+      <button type="submit" id="submit-btn">認証</button>
+    </form>
+
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+
+    <p class="footer">© ChatGPT Creative Club</p>
+  </main>
+
+<script>
+  const API_URL = "https://ccc-gpt-member-api.hasyamo.workers.dev/validate-member";
+
+  const form = document.getElementById("auth-form");
+  const submitBtn = document.getElementById("submit-btn");
+  const messageEl = document.getElementById("message");
+
+  function showMessage(type, html) {
+    messageEl.className = "message is-visible " + type;
+    messageEl.innerHTML = html;
+  }
+
+  function clearMessage() {
+    messageEl.className = "message";
+    messageEl.innerHTML = "";
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMessage();
+
+    const noteId = document.getElementById("note_id").value.trim();
+    const accessCode = document.getElementById("access_code").value.trim();
+
+    if (!noteId || !accessCode) {
+      showMessage("error", "note ID または access code が正しくありません。");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "認証中...";
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note_id: noteId, access_code: accessCode })
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data && data.allowed && data.gpts_url) {
+        showMessage(
+          "success",
+          "認証されました。<br />下のリンクから会員証 GPTs をご利用ください。" +
+          '<br /><a class="gpt-link" href="' + data.gpts_url + '" target="_blank" rel="noopener noreferrer">Open GPTs</a>'
+        );
+      } else {
+        showMessage("error", "note ID または access code が正しくありません。");
+      }
+    } catch (err) {
+      showMessage("error", "note ID または access code が正しくありません。");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "認証";
+    }
+  });
+</script>
+</body>
+</html>
