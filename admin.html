@@ -329,11 +329,77 @@
     font-size: 13px;
   }
 
+  .members-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .members-toolbar .btn-secondary {
+    margin-top: 0;
+  }
+
   .members-summary {
     margin-top: 12px;
     font-size: 12px;
     color: var(--text-2);
     letter-spacing: 0.1em;
+  }
+
+  .message-btn {
+    appearance: none;
+    background: transparent;
+    border: 1px solid rgba(244, 225, 163, 0.5);
+    color: var(--gold-1);
+    font-family: "Noto Serif JP", serif;
+    font-size: 11px;
+    padding: 4px 10px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: background 0.2s ease;
+    margin-right: 6px;
+  }
+  .message-btn:hover:not(:disabled) {
+    background: rgba(244, 225, 163, 0.1);
+  }
+  .message-btn.copied {
+    color: var(--success);
+    border-color: rgba(201, 232, 180, 0.5);
+  }
+
+  textarea {
+    appearance: none;
+    background: rgba(7, 6, 10, 0.7);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    color: var(--text-1);
+    font-family: "Noto Serif JP", serif;
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 0;
+    width: 100%;
+    resize: vertical;
+  }
+  textarea:focus {
+    border-color: var(--gold-2);
+    box-shadow: 0 0 0 1px var(--gold-soft), 0 0 16px rgba(212, 175, 55, 0.2);
+  }
+
+  .current-template-box {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border: 1px dashed rgba(212, 175, 55, 0.25);
+    font-size: 12px;
+    color: var(--text-1);
+    white-space: pre-wrap;
+    word-break: break-all;
+    min-height: 60px;
+    line-height: 1.7;
+  }
+  .current-template-box .placeholder {
+    color: var(--text-2);
+    opacity: 0.6;
   }
 
   .members-table {
@@ -480,11 +546,42 @@
     <section class="section">
       <h2 class="section-title">会員一覧</h2>
 
-      <button type="button" class="btn-secondary" id="fetch-members-btn">一覧を取得</button>
+      <div class="members-toolbar">
+        <button type="button" class="btn-secondary" id="fetch-members-btn">一覧を取得</button>
+        <button type="button" class="btn-secondary" id="copy-tsv-btn" disabled>全件 TSV コピー</button>
+      </div>
 
       <div id="members-summary" class="members-summary"></div>
       <div id="members-table-wrap"></div>
       <div id="members-message" class="message" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">メッセージテンプレ更新</h2>
+
+      <div class="field">
+        <label>現在のテンプレート</label>
+        <div class="current-template-box" id="current-template-box">
+          <span class="placeholder">「現在のテンプレートを取得」を押してください</span>
+        </div>
+        <button type="button" class="btn-secondary" id="fetch-template-btn">現在のテンプレートを取得</button>
+      </div>
+
+      <form id="update-template-form" novalidate style="margin-top: 20px;">
+        <div class="field">
+          <label for="new_template">新しいテンプレート</label>
+          <textarea
+            id="new_template"
+            name="new_template"
+            rows="12"
+            spellcheck="false"
+            placeholder="テンプレ本文を入力してください。&#10;{{note_id}} と {{access_code}} が利用できます。"
+            required
+          ></textarea>
+        </div>
+        <button type="submit" class="btn-primary" id="update-template-btn">テンプレートを更新</button>
+      </form>
+      <div id="template-message" class="message" role="status" aria-live="polite"></div>
     </section>
 
     <p class="footer">© ChatGPT Creative Club / Admin</p>
@@ -509,9 +606,19 @@
   const urlMessageEl = document.getElementById("url-message");
 
   const fetchMembersBtn = document.getElementById("fetch-members-btn");
+  const copyTsvBtn = document.getElementById("copy-tsv-btn");
   const membersSummaryEl = document.getElementById("members-summary");
   const membersTableWrap = document.getElementById("members-table-wrap");
   const membersMessageEl = document.getElementById("members-message");
+
+  const fetchTemplateBtn = document.getElementById("fetch-template-btn");
+  const currentTemplateBox = document.getElementById("current-template-box");
+  const updateTemplateForm = document.getElementById("update-template-form");
+  const updateTemplateBtn = document.getElementById("update-template-btn");
+  const newTemplateEl = document.getElementById("new_template");
+  const templateMessageEl = document.getElementById("template-message");
+
+  let cachedMembers = [];
 
   function setMessage(el, type, html) {
     el.className = "message is-visible " + type;
@@ -674,8 +781,12 @@
       const data = await res.json().catch(() => null);
 
       if (res.ok && data && data.ok) {
-        renderMembers(data.members || [], data.total ?? (data.members || []).length);
+        cachedMembers = data.members || [];
+        copyTsvBtn.disabled = cachedMembers.length === 0;
+        renderMembers(cachedMembers, data.total ?? cachedMembers.length);
       } else {
+        cachedMembers = [];
+        copyTsvBtn.disabled = true;
         membersSummaryEl.textContent = "";
         membersTableWrap.innerHTML = "";
         setMessage(membersMessageEl, "error", reasonToText(data?.reason, "取得に失敗しました。"));
@@ -728,6 +839,14 @@
 
       const tdActions = document.createElement("td");
       tdActions.className = "actions";
+
+      const msgBtn = document.createElement("button");
+      msgBtn.type = "button";
+      msgBtn.className = "message-btn";
+      msgBtn.textContent = "メッセージ作成";
+      msgBtn.addEventListener("click", () => buildAndCopyMessage(m, msgBtn));
+      tdActions.appendChild(msgBtn);
+
       const delBtn = document.createElement("button");
       delBtn.type = "button";
       delBtn.className = "delete-btn";
@@ -780,6 +899,170 @@
   }
 
   fetchMembersBtn.addEventListener("click", fetchMembers);
+
+  // --- 全件 TSV コピー ---
+  copyTsvBtn.addEventListener("click", async () => {
+    if (cachedMembers.length === 0) return;
+
+    const header = "note_id\taccess_code";
+    const rows = cachedMembers.map((m) => `${m.note_id}\t${m.access_code}`);
+    const tsv = [header, ...rows].join("\n");
+
+    try {
+      await navigator.clipboard.writeText(tsv);
+      const original = copyTsvBtn.textContent;
+      copyTsvBtn.classList.add("copied");
+      copyTsvBtn.textContent = "コピー済み";
+      setTimeout(() => {
+        copyTsvBtn.classList.remove("copied");
+        copyTsvBtn.textContent = original;
+      }, 1800);
+    } catch (e) {
+      setMessage(membersMessageEl, "error", "コピーに失敗しました。");
+    }
+  });
+
+  // --- メッセージ作成 ---
+  let cachedTemplateForMessage = null;
+
+  async function loadTemplateForMessage() {
+    const password = passwordEl.value;
+    if (!password) {
+      throw new Error("missing_password");
+    }
+    const res = await fetch(API_BASE + "/admin/get-message-template", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ admin_password: password })
+    });
+    const data = await res.json().catch(() => null);
+    if (!(res.ok && data && data.ok)) {
+      const reason = data?.reason || "unknown";
+      throw new Error(reason);
+    }
+    return data.template || "";
+  }
+
+  function applyTemplate(template, member) {
+    return template
+      .replace(/\{\{note_id\}\}/g, member.note_id)
+      .replace(/\{\{access_code\}\}/g, member.access_code);
+  }
+
+  async function buildAndCopyMessage(member, btn) {
+    clearMessage(membersMessageEl);
+    if (!passwordEl.value) {
+      setMessage(membersMessageEl, "error", "管理者パスワードを入力してください。");
+      return;
+    }
+
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "生成中...";
+
+    try {
+      if (cachedTemplateForMessage === null) {
+        cachedTemplateForMessage = await loadTemplateForMessage();
+      }
+      const message = applyTemplate(cachedTemplateForMessage, member);
+      await navigator.clipboard.writeText(message);
+      btn.classList.add("copied");
+      btn.textContent = "コピー済み";
+      setTimeout(() => {
+        btn.classList.remove("copied");
+        btn.textContent = original;
+        btn.disabled = false;
+      }, 1800);
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = original;
+      const reason = err && err.message;
+      if (reason === "invalid_password") {
+        cachedTemplateForMessage = null;
+        setMessage(membersMessageEl, "error", "管理者パスワードが違います。");
+      } else if (reason === "missing_password") {
+        setMessage(membersMessageEl, "error", "管理者パスワードを入力してください。");
+      } else {
+        setMessage(membersMessageEl, "error", "メッセージ生成に失敗しました。");
+      }
+    }
+  }
+
+  // --- メッセージテンプレ取得 ---
+  fetchTemplateBtn.addEventListener("click", async () => {
+    clearMessage(templateMessageEl);
+    const password = passwordEl.value;
+    if (!password) {
+      setMessage(templateMessageEl, "error", "管理者パスワードを入力してください。");
+      return;
+    }
+
+    fetchTemplateBtn.disabled = true;
+    fetchTemplateBtn.textContent = "取得中...";
+
+    try {
+      const res = await fetch(API_BASE + "/admin/get-message-template", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_password: password })
+      });
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data && data.ok) {
+        currentTemplateBox.textContent = data.template || "";
+        cachedTemplateForMessage = data.template || "";
+        if (!newTemplateEl.value) {
+          newTemplateEl.value = data.template || "";
+        }
+      } else {
+        setMessage(templateMessageEl, "error", reasonToText(data?.reason, "取得に失敗しました。"));
+      }
+    } catch (err) {
+      setMessage(templateMessageEl, "error", "通信エラーが発生しました。");
+    } finally {
+      fetchTemplateBtn.disabled = false;
+      fetchTemplateBtn.textContent = "現在のテンプレートを取得";
+    }
+  });
+
+  // --- メッセージテンプレ更新 ---
+  updateTemplateForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMessage(templateMessageEl);
+
+    const password = passwordEl.value;
+    const newTemplate = newTemplateEl.value;
+
+    if (!password || !newTemplate) {
+      setMessage(templateMessageEl, "error", "管理者パスワードと新しいテンプレートを入力してください。");
+      return;
+    }
+
+    updateTemplateBtn.disabled = true;
+    updateTemplateBtn.textContent = "更新中...";
+
+    try {
+      const res = await fetch(API_BASE + "/admin/update-message-template", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_password: password, template: newTemplate })
+      });
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data && data.ok) {
+        currentTemplateBox.textContent = data.template || newTemplate;
+        cachedTemplateForMessage = data.template || newTemplate;
+        setMessage(templateMessageEl, "success", "テンプレートを更新しました。");
+      } else {
+        setMessage(templateMessageEl, "error", reasonToText(data?.reason, "更新に失敗しました。"));
+      }
+    } catch (err) {
+      setMessage(templateMessageEl, "error", "通信エラーが発生しました。");
+    } finally {
+      updateTemplateBtn.disabled = false;
+      updateTemplateBtn.textContent = "テンプレートを更新";
+    }
+  });
 
   // --- GPTs URL 更新 ---
   updateUrlForm.addEventListener("submit", async (e) => {
