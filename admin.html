@@ -176,7 +176,48 @@
     box-shadow: 0 0 0 1px var(--gold-soft), 0 0 16px rgba(212, 175, 55, 0.2);
   }
 
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+  .tab {
+    flex: 1;
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-2);
+    font-family: "Cormorant Garamond", "Noto Serif JP", serif;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    padding: 12px 8px;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .tab:hover {
+    color: var(--gold-1);
+  }
+  .tab.is-active {
+    color: var(--gold-1);
+    border-bottom-color: var(--gold-2);
+  }
+
+  .tab-panel {
+    display: none;
+    padding-top: 16px;
+  }
+  .tab-panel.is-active {
+    display: block;
+  }
+
   .section {
+    margin-top: 0;
+  }
+  .tab-panel > .section + .section {
     border-top: 1px solid rgba(212, 175, 55, 0.18);
     padding-top: 24px;
     margin-top: 24px;
@@ -495,100 +536,123 @@
       </div>
     </div>
 
-    <section class="section">
-      <h2 class="section-title">access_code 発行</h2>
-      <form id="issue-form" novalidate>
+    <div class="tabs" role="tablist">
+      <button type="button" class="tab is-active" data-tab="issue" role="tab">発行</button>
+      <button type="button" class="tab" data-tab="members" role="tab">会員</button>
+      <button type="button" class="tab" data-tab="settings" role="tab">設定</button>
+    </div>
+
+    <div class="tab-panel is-active" id="tab-issue" role="tabpanel">
+      <section class="section">
+        <h2 class="section-title">access_code 発行</h2>
+        <form id="issue-form" novalidate>
+          <div class="field">
+            <label for="note_id">Note ID</label>
+            <input
+              type="text"
+              id="note_id"
+              name="note_id"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              required
+            />
+          </div>
+          <button type="submit" class="btn-primary" id="issue-btn">発行</button>
+        </form>
+        <div id="issue-message" class="message" role="status" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <div class="tab-panel" id="tab-members" role="tabpanel">
+      <section class="section">
+        <h2 class="section-title">会員一覧</h2>
+
+        <div class="members-toolbar">
+          <button type="button" class="btn-secondary" id="fetch-members-btn">一覧を取得</button>
+          <button type="button" class="btn-secondary" id="copy-tsv-btn" disabled>全件 TSV コピー</button>
+        </div>
+
+        <div id="members-summary" class="members-summary"></div>
+        <div id="members-table-wrap"></div>
+        <div id="members-message" class="message" role="status" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <div class="tab-panel" id="tab-settings" role="tabpanel">
+      <section class="section">
+        <h2 class="section-title">GPTs URL 更新</h2>
+
         <div class="field">
-          <label for="note_id">Note ID</label>
-          <input
-            type="text"
-            id="note_id"
-            name="note_id"
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-            required
-          />
+          <label>現在の URL</label>
+          <div class="current-url-box" id="current-url-box">
+            <span class="placeholder">「現在のURLを取得」を押してください</span>
+          </div>
+          <button type="button" class="btn-secondary" id="fetch-url-btn">現在のURLを取得</button>
         </div>
-        <button type="submit" class="btn-primary" id="issue-btn">発行</button>
-      </form>
-      <div id="issue-message" class="message" role="status" aria-live="polite"></div>
-    </section>
 
-    <section class="section">
-      <h2 class="section-title">GPTs URL 更新</h2>
+        <form id="update-url-form" novalidate style="margin-top: 20px;">
+          <div class="field">
+            <label for="new_gpts_url">新しい URL</label>
+            <input
+              type="url"
+              id="new_gpts_url"
+              name="new_gpts_url"
+              autocomplete="off"
+              placeholder="https://chatgpt.com/g/..."
+              required
+            />
+          </div>
+          <button type="submit" class="btn-primary" id="update-btn">更新</button>
+        </form>
+        <div id="url-message" class="message" role="status" aria-live="polite"></div>
+      </section>
 
-      <div class="field">
-        <label>現在の URL</label>
-        <div class="current-url-box" id="current-url-box">
-          <span class="placeholder">「現在のURLを取得」を押してください</span>
-        </div>
-        <button type="button" class="btn-secondary" id="fetch-url-btn">現在のURLを取得</button>
-      </div>
+      <section class="section">
+        <h2 class="section-title">メッセージテンプレ更新</h2>
 
-      <form id="update-url-form" novalidate style="margin-top: 20px;">
         <div class="field">
-          <label for="new_gpts_url">新しい URL</label>
-          <input
-            type="url"
-            id="new_gpts_url"
-            name="new_gpts_url"
-            autocomplete="off"
-            placeholder="https://chatgpt.com/g/..."
-            required
-          />
+          <label>現在のテンプレート</label>
+          <div class="current-template-box" id="current-template-box">
+            <span class="placeholder">「現在のテンプレートを取得」を押してください</span>
+          </div>
+          <button type="button" class="btn-secondary" id="fetch-template-btn">現在のテンプレートを取得</button>
         </div>
-        <button type="submit" class="btn-primary" id="update-btn">更新</button>
-      </form>
-      <div id="url-message" class="message" role="status" aria-live="polite"></div>
-    </section>
 
-    <section class="section">
-      <h2 class="section-title">会員一覧</h2>
-
-      <div class="members-toolbar">
-        <button type="button" class="btn-secondary" id="fetch-members-btn">一覧を取得</button>
-        <button type="button" class="btn-secondary" id="copy-tsv-btn" disabled>全件 TSV コピー</button>
-      </div>
-
-      <div id="members-summary" class="members-summary"></div>
-      <div id="members-table-wrap"></div>
-      <div id="members-message" class="message" role="status" aria-live="polite"></div>
-    </section>
-
-    <section class="section">
-      <h2 class="section-title">メッセージテンプレ更新</h2>
-
-      <div class="field">
-        <label>現在のテンプレート</label>
-        <div class="current-template-box" id="current-template-box">
-          <span class="placeholder">「現在のテンプレートを取得」を押してください</span>
-        </div>
-        <button type="button" class="btn-secondary" id="fetch-template-btn">現在のテンプレートを取得</button>
-      </div>
-
-      <form id="update-template-form" novalidate style="margin-top: 20px;">
-        <div class="field">
-          <label for="new_template">新しいテンプレート</label>
-          <textarea
-            id="new_template"
-            name="new_template"
-            rows="12"
-            spellcheck="false"
-            placeholder="テンプレ本文を入力してください。&#10;{{note_id}} と {{access_code}} が利用できます。"
-            required
-          ></textarea>
-        </div>
-        <button type="submit" class="btn-primary" id="update-template-btn">テンプレートを更新</button>
-      </form>
-      <div id="template-message" class="message" role="status" aria-live="polite"></div>
-    </section>
+        <form id="update-template-form" novalidate style="margin-top: 20px;">
+          <div class="field">
+            <label for="new_template">新しいテンプレート</label>
+            <textarea
+              id="new_template"
+              name="new_template"
+              rows="12"
+              spellcheck="false"
+              placeholder="テンプレ本文を入力してください。&#10;{{note_id}} と {{access_code}} が利用できます。"
+              required
+            ></textarea>
+          </div>
+          <button type="submit" class="btn-primary" id="update-template-btn">テンプレートを更新</button>
+        </form>
+        <div id="template-message" class="message" role="status" aria-live="polite"></div>
+      </section>
+    </div>
 
     <p class="footer">© ChatGPT Creative Club / Admin</p>
   </main>
 
 <script>
   const API_BASE = "https://ccc-gpt-member-api.hasyamo.workers.dev";
+
+  // --- タブ切替 ---
+  const tabButtons = document.querySelectorAll(".tab");
+  const tabPanels = document.querySelectorAll(".tab-panel");
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const target = btn.dataset.tab;
+      tabButtons.forEach((b) => b.classList.toggle("is-active", b === btn));
+      tabPanels.forEach((p) => p.classList.toggle("is-active", p.id === `tab-${target}`));
+    });
+  });
 
   const passwordEl = document.getElementById("admin_password");
 
