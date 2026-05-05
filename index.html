@@ -254,6 +254,37 @@
     background: rgba(212, 175, 55, 0.1);
   }
 
+  .thanks-card-wrap {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .thanks-card-img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    display: block;
+  }
+
+  .thanks-save-link {
+    display: inline-block;
+    padding: 8px 16px;
+    color: var(--gold-1);
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    text-decoration: none;
+    font-family: "Noto Serif JP", serif;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    transition: background 0.2s ease;
+  }
+  .thanks-save-link:hover {
+    background: rgba(212, 175, 55, 0.1);
+  }
+
   .footer {
     margin-top: 28px;
     text-align: center;
@@ -325,7 +356,9 @@
   </main>
 
 <script>
-  const API_URL = "https://ccc-gpt-member-api.hasyamo.workers.dev/validate-member";
+  const API_BASE = "https://ccc-gpt-member-api.hasyamo.workers.dev";
+  const API_URL = API_BASE + "/validate-member";
+  const THANKS_URL = API_BASE + "/thanks-image";
 
   const form = document.getElementById("auth-form");
   const submitBtn = document.getElementById("submit-btn");
@@ -339,6 +372,40 @@
   function clearMessage() {
     messageEl.className = "message";
     messageEl.innerHTML = "";
+  }
+
+  async function loadThanksCard(noteId, accessCode) {
+    try {
+      const res = await fetch(THANKS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note_id: noteId, access_code: accessCode })
+      });
+      const data = await res.json().catch(() => null);
+
+      const wrap = document.getElementById("thanks-card-wrap");
+      if (!wrap) return;
+
+      if (res.ok && data && data.ok && data.image_base64) {
+        const dataUrl = `data:${data.mime || "image/webp"};base64,${data.image_base64}`;
+        const img = document.createElement("img");
+        img.className = "thanks-card-img";
+        img.alt = "Thanks Card";
+        img.src = dataUrl;
+
+        const saveLink = document.createElement("a");
+        saveLink.className = "thanks-save-link";
+        saveLink.href = dataUrl;
+        saveLink.download = data.filename || "thanks_card.webp";
+        saveLink.textContent = "画像を保存";
+
+        wrap.appendChild(img);
+        wrap.appendChild(saveLink);
+        wrap.hidden = false;
+      }
+    } catch (err) {
+      // 画像取得失敗は致命的ではないので silent fail
+    }
   }
 
   form.addEventListener("submit", async (e) => {
@@ -369,8 +436,10 @@
         showMessage(
           "success",
           "認証されました。<br />下のリンクから会員証 GPTs をご利用ください。" +
-          '<br /><a class="gpt-link" href="' + data.gpts_url + '" target="_blank" rel="noopener noreferrer">Open GPTs</a>'
+          '<br /><a class="gpt-link" href="' + data.gpts_url + '" target="_blank" rel="noopener noreferrer">Open GPTs</a>' +
+          '<div id="thanks-card-wrap" class="thanks-card-wrap" hidden></div>'
         );
+        loadThanksCard(noteId, accessCode);
       } else {
         showMessage("error", "note ID または access code が正しくありません。");
       }
